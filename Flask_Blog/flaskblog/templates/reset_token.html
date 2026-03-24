@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <!-- Main container for the password reset form -->
+    <div class="content-section">
+
+        <!-- Form for submitting a new password (after clicking email link) -->
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}  <!-- CSRF token + hidden fields -->
+
+            <fieldset class="form-group">
+                <!-- Page heading -->
+                <legend class="border-bottom mb-4">Reset Password</legend>
+
+                <!-- NEW PASSWORD FIELD -->
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+
+                    {% if form.password.errors %}
+                        <!-- Highlight field red if validation fails -->
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+
+                        <!-- Display validation error messages -->
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        <!-- Normal password input -->
+                        {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+                <!-- CONFIRM PASSWORD FIELD -->
+                <div class="form-group">
+                    {{ form.confirm_password.label(class="form-control-label") }}
+
+                    {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+            </fieldset>
+
+            <!-- Submit button -->
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+
+        </form>
+    </div>
+
+{% endblock content %}

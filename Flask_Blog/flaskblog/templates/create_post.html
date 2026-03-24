@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- Main container for the post creation/edit form -->
+<div class="content-section">
+
+    <!-- Form for creating or updating a post -->
+    <!-- enctype="multipart/form-data" allows image uploads -->
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}  <!-- CSRF token + hidden fields -->
+
+        <fieldset class="form-group">
+            <!-- Dynamic title (e.g., "New Post" or "Update Post") -->
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+
+            <!-- TITLE FIELD -->
+            <div class="form-group">
+                {{ form.title.label(class="form-control-label") }}
+
+                {% if form.title.errors %}
+                    <!-- Highlight field red if validation errors exist -->
+                    {{ form.title(class="form-control form-control-lg is-invalid") }}
+
+                    <!-- Display validation error messages -->
+                    <div class="invalid-feedback">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Normal title input -->
+                    {{ form.title(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- CONTENT FIELD -->
+            <div class="form-group">
+                {{ form.content.label(class="form-control-label") }}
+
+                {% if form.content.errors %}
+                    {{ form.content(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+                        {% for error in form.content.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.content(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- IMAGE UPLOAD FIELD -->
+            <div class="form-group">
+                {{ form.picture.label(class="form-control-label") }}
+
+                {% if form.picture.errors %}
+                    <!-- If invalid file type or other error -->
+                    {{ form.picture(class="invalid-feedback d-block") }}
+
+                    <div class="invalid-feedback">
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span><br>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Normal file input -->
+                    {{ form.picture(class="form-control-file") }}
+                {% endif %}
+            </div>
+
+            <!-- TAG SELECTION (only shown if category is not 'blog') -->
+            {% if category != 'blog' %}
+                <div class="form-group">
+                    {{ form.tags.label(class="form-control-label") }}
+
+                    {% if form.tags.errors %}
+                        {{ form.tags(class="form-control form-control-lg is-invalid") }}
+
+                        <div class="invalid feedback">
+                            {% for error in form.tags.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        <!-- Tag selection UI -->
+                        <div class="d-flex align-items-center flex-wrap mr-2">
+
+                            <!-- Dropdown menu for selecting tags -->
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle mr-2"
+                                        type="button" data-toggle="dropdown">
+                                    Add Tag
+                                </button>
+
+                                <!-- Tag options -->
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item tag-option" data-tag="beef">Beef</a>
+                                    <a class="dropdown-item tag-option" data-tag="chicken">Chicken</a>
+                                    <a class="dropdown-item tag-option" data-tag="salami">Salami</a>
+                                    <a class="dropdown-item tag-option" data-tag="veggie">Veggie</a>
+                                    <a class="dropdown-item tag-option" data-tag="easy">Amateur</a>
+                                    <a class="dropdown-item tag-option" data-tag="medium">Proficient</a>
+                                    <a class="dropdown-item tag-option" data-tag="hard">Expert</a>
+                                    <a class="dropdown-item tag-option" data-tag="quick">Quick</a>
+                                    <a class="dropdown-item tag-option" data-tag="moderate">Moderate</a>
+                                    <a class="dropdown-item tag-option" data-tag="slow">Slow</a>
+                                </div>
+                            </div>
+
+                            <!-- Container where selected tags will appear (JS handles this) -->
+                            <div id="selected-tags"></div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </fieldset>
+
+        <!-- Submit button -->
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+
+    </form>
+</div>
+
+{% endblock content %}

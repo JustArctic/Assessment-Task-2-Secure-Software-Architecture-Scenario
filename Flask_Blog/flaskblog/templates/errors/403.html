@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+<style>
+    /* Hide the sidebar column completely */
+    .col-md-4 {
+        display: none !important;
+    }
+
+    /* Make the content column full width */
+    .col-md-8 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+</style>
+
+{% block content %}
+    <div class="content-section">
+        <h1>You don't have permission to do that (403)</h1>
+        <p>Please check your account and try again</p>
+    </div>
+{% endblock content %}

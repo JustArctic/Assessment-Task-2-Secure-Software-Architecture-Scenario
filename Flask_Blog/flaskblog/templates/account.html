@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="content-section">
+
+    <!-- User profile section -->
+    <div class="media">
+        <img class="rounded-circle account-img" src="{{ image_file }}">
+        <div class="media-body">
+            <h2 class="account-heading">{{ current_user.username }}</h2>
+            <p class="text-secondary">{{ current_user.email }}</p>
+        </div>
+    </div>
+
+    <!-- Account update form -->
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Account Info</legend>
+
+            <!-- USERNAME FIELD -->
+            <div class="form-group">
+                {{ form.username.label(class="form-control-label") }}
+
+                {% if form.username.errors %}
+                    {{ form.username(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.username.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.username(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- EMAIL FIELD -->
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+
+                {% if form.email.errors %}
+                    {{ form.email(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- PROFILE PICTURE UPLOAD -->
+            <div class="form-group">
+                {{ form.picture.label() }}
+                {{ form.picture(class="form-control-file") }}
+
+                {% if form.picture.errors %}
+                    {% for error in form.picture.errors %}
+                        <span class="text-danger">{{ error }}</span><br>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+        </fieldset>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+
+    <!-- 2FA SECTION -->
+    <fieldset class="form-group mt-4">
+        <legend class="border-bottom mb-4">Security Options</legend>
+
+        {% if current_user.two_factor_enabled %}
+            <p class="text-success"><strong>2FA is currently enabled on your account.</strong></p>
+            <div class="form-inline">
+                <a href="{{ url_for('users.enable_2fa') }}" class="btn btn-outline-secondary mr-2">
+                    Reconfigure 2FA
+                </a>
+
+                <form method="POST" action="{{ url_for('users.disable_2fa') }}" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger">
+                        Disable 2FA
+                    </button>
+                </form>
+            </div>  
+        {% else %}
+            <p class="text-muted">Add an extra layer of security with two-factor authentication.</p>
+
+            <a href="{{ url_for('users.enable_2fa') }}" class="btn btn-outline-info">
+                Enable Two‑Factor Authentication
+            </a>
+        {% endif %}
+    </fieldset>
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <!-- Main container for the reset password form -->
+    <div class="content-section">
+
+        <!-- Form for requesting a password reset email -->
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}  <!-- CSRF token + hidden fields -->
+
+            <fieldset class="form-group">
+                <!-- Page heading -->
+                <legend class="border-bottom mb-4">Reset Password</legend>
+
+                <!-- EMAIL FIELD -->
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+
+                    {% if form.email.errors %}
+                        <!-- Highlight field red if validation fails -->
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+
+                        <!-- Display validation error messages -->
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        <!-- Normal email input -->
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+
+            <!-- Submit button -->
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+
+        </form>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Basic metadata for character encoding and responsive layout -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap 4 CSS for layout and styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <!-- Custom site-wide CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    <!-- Dynamic page title -->
+    {% if title %}
+        <title>Perfect Pizzas - {{ title }}</title>
+    {% else %}
+        <title>Perfect Pizzas</title>
+    {% endif %}
+</head>
+
+<body>
+    <!-- Top navigation bar -->
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+
+          <!-- Logo + site name -->
+          <a class="navbar-brand d-flex align-items-center mr-4" href="/">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Bonnyrigg High School Logo" class="navbar-logo">
+            <span>Perfect Pizzas</span>
+          </a>
+
+          <!-- Mobile menu toggle -->
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <!-- Collapsible navigation content -->
+          <div class="collapse navbar-collapse" id="navbarToggle">
+
+            <!-- Left side navigation links -->
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Recipes</a>
+              <a class="nav-item nav-link" href="{{ url_for('main.blog') }}">Blog</a>
+              <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
+            </div>
+
+            <!-- Right side navigation (auth-dependent) -->
+            <div class="navbar-nav">
+              {% if current_user.is_authenticated %}
+
+                <!-- Show correct "New Post" link depending on category -->
+                {% if current_category == 'main' %}
+                  <a class="nav-link" href="{{ url_for('posts.new_post', category='main') }}">New Post</a>
+                {% elif current_category == 'blog' %}
+                  <a class="nav-link" href="{{ url_for('posts.new_post', category='blog') }}">New Post</a>
+                {% endif %}
+
+                <!-- Account + Logout -->
+                <a class="nav-item nav-link" href="{{ url_for('users.account') }}">Account</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+
+              {% else %}
+                <!-- Login/Register for guests -->
+                <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.register') }}">Register</a>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main page content container -->
+    <main role="main" class="container">
+      <div class="row">
+
+        <!-- Main content column -->
+        <div class="col-md-8">
+
+          <!-- Flash messages (success, error, etc.) -->
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <!-- Page-specific content -->
+          {% block content %}{% endblock %}
+        </div>
+
+        <!-- Sidebar -->
+        {% include "sidebar.html" %}
+      </div>
+    </main>
+
+    <!-- Bootstrap + dependencies -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+<!-- TAG SELECTION SCRIPT -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        /* Groups of tags where only one can be selected at a time */
+        const exclusiveGroups = {
+            ingredients: ["beef", "chicken", "salami", "veggie"],
+            difficulty: ["easy", "medium", "hard"],
+            cooking_time: ["quick", "moderate", "slow"]
+        };
+
+        /* Add click listeners to all tag options */
+        document.querySelectorAll('.tag-option').forEach(item => {
+            item.addEventListener('click', function() {
+
+                const tagValue = this.getAttribute('data-tag');  // internal tag value
+                const tagLabel = this.textContent;               // visible label
+                const hiddenField = document.querySelector('input[name="tags"]');
+                let current = hiddenField.value ? hiddenField.value.split(",") : [];
+
+                /* Determine if this tag belongs to an exclusive group */
+                let groupName = null;
+                for (const group in exclusiveGroups) {
+                    if (exclusiveGroups[group].includes(tagValue)) {
+                        groupName = group;
+                        break;
+                    }
+                }
+
+                /* If tag is exclusive, remove other tags from that group */
+                if (groupName) {
+                    const groupTags = exclusiveGroups[groupName];
+
+                    // Remove group tags from hidden field
+                    current = current.filter(t => !groupTags.includes(t));
+
+                    // Remove badges for removed tags
+                    document.querySelectorAll('.tag-badge').forEach(badge => {
+                        if (groupTags.includes(badge.dataset.tag)) {
+                            badge.remove();
+                        }
+                    });
+                }
+
+                /* Add tag if not already selected */
+                if (!current.includes(tagValue)) {
+                    current.push(tagValue);
+
+                    // Create a visible badge for the selected tag
+                    const badge = document.createElement('span');
+                    badge.className = "badge badge-secondary mr-2 tag-badge";
+                    badge.dataset.tag = tagValue;
+                    badge.textContent = tagLabel;
+
+                    document.getElementById('selected-tags').appendChild(badge);
+                }
+
+                /* Update hidden input field */
+                hiddenField.value = current.join(",");
+            });
+        });
+    });
+</script>
+
+
+<!-- SIMPLE COPY-LINK FUNCTION -->
+<script>
+function copyPostLink() {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Post link copied to clipboard!");
+}
+</script>
+
+
+<!-- SHARE LINK SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* Add click listeners to all "Share" links */
+    document.querySelectorAll(".copy-link").forEach(link => {
+        link.addEventListener("click", async function (e) {
+            e.preventDefault();
+
+            const url = this.getAttribute("data-url");     // URL to copy
+            const textElement = this.querySelector(".copy-text"); // Text inside the link
+
+            try {
+                await navigator.clipboard.writeText(url);
+
+                // Temporarily change text to confirm copy
+                textElement.textContent = "Copied!";
+
+                setTimeout(() => {
+                    textElement.textContent = "Share ↻";
+                }, 1500);
+
+            } catch (err) {
+                console.error("Clipboard error:", err);
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

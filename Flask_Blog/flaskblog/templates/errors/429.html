@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    /* Hide the sidebar column completely */
+    .col-md-4 {
+        display: none !important;
+    }
+
+    /* Make the content column full width */
+    .col-md-8 {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+</style>
+
+<div class="content-section text-center">
+    <h2 class="mb-4">Too Many Attempts</h2>
+    <p class="text-muted">
+        You’ve tried too many times in a short period.<br>
+        Please wait <span id="countdown">60</span> seconds before trying again.
+    </p>
+</div>
+
+<script>
+    let seconds = 60;
+    const countdownEl = document.getElementById("countdown");
+    countdownEl.textContent = seconds;
+
+    const timer = setInterval(() => {
+        seconds--;
+        countdownEl.textContent = seconds;
+
+        if (seconds <= 0) {
+            clearInterval(timer);
+            window.location.href = "{{ url_for('users.login') }}";
+        }
+    }, 1000);
+</script>
+
+{% endblock content %}
