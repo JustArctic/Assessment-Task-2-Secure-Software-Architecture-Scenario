@@ -1,4 +1,4 @@
-# Assessment Task 2 Secure Software Architecture Scenario
+# Perfect Pizzas - Assessment Task 2 Secure Software Architecture Scenario
 
 A clean, interactive and highly accessible cooking blog website featuring various different delicious pizza recipes, built with the Python Flask library, HTML, CSS and JavaScript.
 
