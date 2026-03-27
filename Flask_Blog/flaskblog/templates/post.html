@@ -10,7 +10,7 @@
     <!-- Author profile picture -->
     <img class="rounded-circle article-img"
          src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
-
+         
     <div class="media-body">
 
       <!-- Metadata row: username, date, tags, and edit/delete buttons -->
@@ -121,6 +121,10 @@
         <!-- Delete form (POST request) -->
         <form action="{{ url_for('posts.delete_post', post_id=post.id) }}"
               method="POST">
+
+          <!-- Token to protect against CSRF -->
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
           <input class="btn btn-danger" type="submit" value="Delete">
         </form>
 

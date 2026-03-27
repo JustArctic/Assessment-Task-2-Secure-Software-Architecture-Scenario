@@ -3,7 +3,9 @@ from flaskblog.models import Post
 
 main = Blueprint('main', __name__)
 
-
+# ---------------------------------------------------------
+# Home page
+# ---------------------------------------------------------
 @main.route("/")
 @main.route("/home")
 def home():
@@ -26,6 +28,9 @@ def home():
     # Render home page with posts and category context
     return render_template('home.html', posts=posts, current_category='main')
 
+# ---------------------------------------------------------
+# Blog page
+# ---------------------------------------------------------
 @main.route("/blog")
 def blog():
     page = request.args.get('page', 1, type=int) # Get current page number for pagination (default = 1)
@@ -47,7 +52,9 @@ def blog():
     # Render home page with posts and category context
     return render_template('blog.html', posts=posts, current_category='blog')
 
-
+# ---------------------------------------------------------
+# About page
+# ---------------------------------------------------------
 @main.route("/about")
 def about():
     return render_template('about.html', title='About')

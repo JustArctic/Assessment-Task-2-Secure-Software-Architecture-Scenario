@@ -1,12 +1,13 @@
 import os
 import logging
-from flask import Flask
+from flask import Flask, session, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_mail import Mail
+from flask_wtf import CSRFProtect
 from flaskblog.config import Config
 from flaskblog.posts.utils import TAG_LABELS
 from logging.handlers import RotatingFileHandler
@@ -38,7 +39,6 @@ def load_admin_user():
         else: 
             print(f"Admin user with email '{email}' and password '{password}' already exists.")
 
-
 def create_app(config_class=Config):
     # Create Flask application instance
     app = Flask(__name__)
@@ -65,6 +65,20 @@ def create_app(config_class=Config):
     @app.context_processor 
     def inject_tag_labels():
         return dict(tag_labels=TAG_LABELS)
+    
+    # Session management
+    @app.before_request
+    def check_session_expired():
+        # Skip login/register/static routes
+        if request.endpoint and ("login" in request.endpoint or "register" in request.endpoint or request.endpoint.startswith("static")):
+            return
+        # Only trigger expiration if the user *was* logged in before
+        if "_user_id" in session and not current_user.is_authenticated:
+            return redirect(url_for("users.login"))
+
+    # Add CSRF protection everywhere
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     # Create admin user on startup
     with app.app_context(): 
@@ -77,7 +91,7 @@ def create_app(config_class=Config):
 
     # create new file to log all errors
     file_handler = RotatingFileHandler("logs/error.log", maxBytes=10240, backupCount=10)
-    file_handler.setLevel(logging.WARNING)
+    file_handler.setLevel(logging.ERROR)
 
     # format all error messages in log file
     formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]")

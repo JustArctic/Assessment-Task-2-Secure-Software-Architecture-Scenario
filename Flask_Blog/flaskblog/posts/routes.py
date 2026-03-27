@@ -7,7 +7,9 @@ from flaskblog.posts.forms import PostForm, CommentForm
 
 posts = Blueprint('posts', __name__)
 
-
+# ---------------------------------------------------------
+# Create posts
+# ---------------------------------------------------------
 @posts.route("/post/new/<string:category>", methods=['GET', 'POST'])
 @login_required # Only logged-in users can create posts
 def new_post(category):
@@ -30,7 +32,9 @@ def new_post(category):
         return redirect(url_for('main.home'))
     return render_template('create_post.html', title='New Post', form=form, category=category, legend='New Post') # Render form for GET requests or failed validation
 
-
+# ---------------------------------------------------------
+# Comment pagination
+# ---------------------------------------------------------
 @posts.route("/post/<int:post_id>", methods=['GET', 'POST'])
 def post(post_id):
     page = request.args.get('page', 1, type=int) # Pagination for comments
@@ -47,7 +51,9 @@ def post(post_id):
     # Render post page with comments
     return render_template('post.html', title=post.title, post=post, form=form, comments=comments, comment_count=comment_count)
 
-
+# ---------------------------------------------------------
+# Update posts
+# ---------------------------------------------------------
 @posts.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required # Only logged-in users can update posts
 def update_post(post_id):
@@ -75,7 +81,9 @@ def update_post(post_id):
             form.picture.data = save_post_picture(form.picture.data)
     return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
 
-
+# ---------------------------------------------------------
+# Delete posts
+# ---------------------------------------------------------
 @posts.route("/post/<int:post_id>/delete", methods=['POST'])
 @login_required # Only logged-in users can delete posts
 def delete_post(post_id):
@@ -91,9 +99,11 @@ def delete_post(post_id):
         return redirect(url_for('main.blog'))
     return redirect(url_for('main.home'))
 
-
+# ---------------------------------------------------------
+# Update comments
+# ---------------------------------------------------------
 @posts.route("/comment/<int:comment_id>/update", methods=['GET', 'POST'])
-@login_required # Only logged-in users can delete comments
+@login_required # Only logged-in users can update comments
 def update_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     if comment.author != current_user and not current_user.is_admin: # Only the author or an admin can delete the comment
@@ -109,7 +119,9 @@ def update_comment(comment_id):
         form.content.data = comment.content
     return render_template("update_comment.html", form=form, comment=comment)
 
-
+# ---------------------------------------------------------
+# Delete comments
+# ---------------------------------------------------------
 @posts.route("/comment/<int:comment_id>/delete", methods=['POST'])
 @login_required # Only logged-in users can delete comments
 def delete_comment(comment_id):

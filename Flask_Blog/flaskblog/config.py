@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv() # Load environment variables from a .env file into the system environment
 
@@ -16,3 +17,14 @@ class Config:
     # Email account credentials pulled from environment variables
     MAIL_USERNAME = os.environ.get('EMAIL_USER')
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
+
+    # Strengthen session management with cookies
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = True # Only over HTTPS
+    SESSION_COOKIE_SAMESITE = "Lax"
+    REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SECURE = True
+    REMEMBER_COOKIE_SAMESITE = "Lax"
+
+    # Set session timeout to 1 hour
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=60)
