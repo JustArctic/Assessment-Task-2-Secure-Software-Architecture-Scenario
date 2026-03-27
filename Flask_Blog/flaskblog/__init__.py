@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -8,7 +9,9 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flaskblog.config import Config
 from flaskblog.posts.utils import TAG_LABELS
+from logging.handlers import RotatingFileHandler
 
+# Assign Variables
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 limiter = Limiter(key_func=get_remote_address)
@@ -46,8 +49,6 @@ def create_app(config_class=Config):
     bcrypt.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
-
-    # Initialise limiter to prevent brute-force attacks
     limiter.init_app(app)
 
     # Register blueprints for modular route organization
@@ -60,12 +61,6 @@ def create_app(config_class=Config):
     app.register_blueprint(main)
     app.register_blueprint(errors)
 
-    # Make rate-limit page use custom template
-    from flask import render_template
-    @app.errorhandler(429)
-    def ratelimit_handler(e):
-        return render_template("errors/429.html"), 429
-
     # Make TAG_LABELS available in all Jinja templates
     @app.context_processor 
     def inject_tag_labels():
@@ -75,5 +70,18 @@ def create_app(config_class=Config):
     with app.app_context(): 
         db.create_all()
         load_admin_user()
+
+    # create new log directory if one doesn't exist
+    if not os.path.exists("logs"):
+        os.mkdir("logs")
+
+    # create new file to log all errors
+    file_handler = RotatingFileHandler("logs/error.log", maxBytes=10240, backupCount=10)
+    file_handler.setLevel(logging.WARNING)
+
+    # format all error messages in log file
+    formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]")
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
 
     return app

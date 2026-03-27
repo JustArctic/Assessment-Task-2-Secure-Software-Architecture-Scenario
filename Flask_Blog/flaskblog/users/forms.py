@@ -79,8 +79,7 @@ class RequestResetForm(FlaskForm):
 # ---------------------------------------------------------
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password',
-                                     validators=[DataRequired(), EqualTo('password')])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Reset Password')
 
 # ---------------------------------------------------------
@@ -95,6 +94,5 @@ class Enable2FAForm(FlaskForm):
 # Form used during login to verify the 6-digit TOTP code
 # ---------------------------------------------------------
 class Verify2FAForm(FlaskForm):
-    code = IntegerField('Authentication Code',
-                        validators=[DataRequired(), NumberRange(min=0, max=999999)])
+    code = IntegerField('Authentication Code', validators=[DataRequired(), NumberRange(min=0, max=999999)])
     submit = SubmitField('Verify')

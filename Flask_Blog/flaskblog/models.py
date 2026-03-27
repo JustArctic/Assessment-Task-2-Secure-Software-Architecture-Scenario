@@ -3,17 +3,21 @@ from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 from flaskblog import db, login_manager
 from flask_login import UserMixin
+from sqlalchemy_utils import EncryptedType
 
 # Callback used by Flask-Login to load a user from the session
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Allow SQLAlchemy to cache object EncryptedType for minor performance boost
+class EncryptedTypeCached(EncryptedType):
+    cache_ok = True
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True) # Primary key for the user table
     username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(EncryptedTypeCached(db.String(120), lambda: current_app.config["FERNET_KEY"]), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg') # Profile image filename stored in the database
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
