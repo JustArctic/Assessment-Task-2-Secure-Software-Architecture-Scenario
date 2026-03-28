@@ -68,14 +68,8 @@
 
         <!-- Show preview if content is long, otherwise show full content -->
         {% if post.content|length > 100 %}
-          <p class="article-content">
-            {{ post.content[:100] }}...
-            <small>
-              <a class="article-read-more"
-                 href="{{ url_for('posts.post', post_id=post.id) }}">
-                 CONTINUE READING ➤
-              </a>
-            </small>
+          <p class="article-content">{{ post.content[:100] }}...
+            <small><a class="article-read-more" href="{{ url_for('posts.post', post_id=post.id) }}">CONTINUE READING ➤</a></small>
           </p>
         {% else %}
           <p class="article-content">{{ post.content }}</p>
