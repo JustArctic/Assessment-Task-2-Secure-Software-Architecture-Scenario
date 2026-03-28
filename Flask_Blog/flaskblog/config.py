@@ -1,8 +1,5 @@
 import os
-from dotenv import load_dotenv
 from datetime import timedelta
-
-load_dotenv() # Load environment variables from a .env file into the system environment
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') # Secret key used by Flask for session security and CSRF protection
